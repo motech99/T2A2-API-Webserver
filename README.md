@@ -32,7 +32,7 @@ All tasks are allocated and tracked through a Trello board. This allows me to vi
 ### This is what it currently looks like as of **20/06/2024**. More features may be added depending on the time
 
 ![1](./docs/r2-1.png)
-![1](./docs/r2-2.png)
+![2](./docs/r2-2.png)
 
 ## R3 Third-Party Services and Dependencies
 
@@ -41,6 +41,9 @@ All tasks are allocated and tracked through a Trello board. This allows me to vi
 ## R5 ORM: Features and Functionalities
 
 ## R6 Models and Relationships
+
+
+![1](./docs/pokemon-ERD.png)
 
 The Entity Relationship Diagram (ERD) offers a clear visual representation of the database structure, making it easier to understand the relationships between different entities. It helps organise the data in a structured manner, ensuring that all necessary entities and their attributes are accounted for.
 
