@@ -42,7 +42,6 @@ All tasks are allocated and tracked through a Trello board. This allows me to vi
 
 ## R6 Models and Relationships
 
-
 ![1](./docs/pokemon-ERD.png)
 
 The Entity Relationship Diagram (ERD) offers a clear visual representation of the database structure, making it easier to understand the relationships between different entities. It helps organise the data in a structured manner, ensuring that all necessary entities and their attributes are accounted for.
