@@ -72,8 +72,8 @@ The Entity Relationship Diagram (ERD) offers a clear visual representation of th
 
 ### Trainers
 
-- **Attributes:** Trainer_ID (PK), name, gym_id (FK)
-- **Description:** The Trainer's table stores information about each trainer and their affiliation with a specific gym.
+- **Attributes:** Trainer_ID (PK), name, username, password, gym_id (FK)
+- **Description:** The Trainers table stores information about each trainer, including their credentials for authentication and their affiliation with a specific gym.
 - **Primary Key:** Trainer_ID uniquely identifies each trainer.
 - **Foreign Key:** gym_id references Gym_id in the Gyms table.
 
