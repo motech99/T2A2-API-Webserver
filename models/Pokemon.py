@@ -31,7 +31,7 @@ class Pokemon(db.Model):
     # setting the tablename name
     __tablename__ = "pokemons"
 
-    # creating Columns (id is always the Primary Key)
+    # creating Columns, IDs are always primary keys
     id: Mapped[int] = mapped_column(primary_key=True)
 
     name: Mapped[str] = mapped_column(String(100), nullable=False)

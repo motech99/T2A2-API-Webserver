@@ -21,7 +21,7 @@ For example, a developer named Sergio Perez tried to build a small application t
 
 ### Solution
 
-To address this issue, this is where this Pokemon API comes into play. This API provides a wealth of information about Pokemon, such as their types, abilities, and evolutions. It also includes details about trainers' affiliations with gyms and evolution chains. The goal of this API is to make Pokemon game development more accessible to aspiring programmers by presenting a simplified and well-documented interface, thus lowering the barrier to entry for beginners.
+To address this issue, this is where this Pokemon API comes into play. This API provides a wealth of information about Pokemon, such as their types, abilities. It also includes details about trainers' affiliations with gyms. The goal of this API is to make Pokemon game development more accessible to aspiring programmers by presenting a simplified and well-documented interface, thus lowering the barrier to entry for beginners.
 
 This simplified Pokemon API has the potential to lead to faster development and more diverse Pokemon games by reducing development hurdles and attracting new programmers. Ultimately, this API aims to contribute to a more vibrant Pokemon gaming ecosystem by solving the issue of information overload and promoting accessibility.
 
@@ -50,7 +50,7 @@ The Entity Relationship Diagram (ERD) offers a clear visual representation of th
 
 ### Pokemon
 
-- **Attributes:** Pokemon_Id (PK), name, type, ability, evolution
+- **Attributes:** Pokemon_Id (PK), name, type, ability, date_caught
 - **Description:** The Pokemon table contains information about each Pokémon.
 - **Primary Key:** Pokemon_Id uniquely identifies each Pokémon
 
