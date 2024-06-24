@@ -1,7 +1,8 @@
 from datetime import date
 from flask import Blueprint
 from models.pokemon import Pokemon
-from init import db
+from models.trainer import Trainer
+from init import db, bcrypt
 
 # Defines a Blueprint for database commands
 db_commands = Blueprint('db', __name__)
@@ -15,7 +16,7 @@ def db_create():
     # Create all tables defined in the models
     db.create_all()
 
-    # Inserting Data in our DB
+    # Inserting Data in DB
     pokemons = [
         Pokemon(
                 name='Squirtle',
@@ -36,7 +37,31 @@ def db_create():
                 date_caught=date(2023, 12, 25),
         ),
     ]
+    # Similar to the Git commit command, we are adding them to the database and comitting
     db.session.add_all(pokemons)
     db.session.commit()
 
-print("Pokemons have been added to the database!")
+    trainers = [
+        Trainer(
+                name='Mohammed Hani',
+                username='mo123',
+                password=bcrypt.generate_password_hash('potatoismyfav123').decode('utf-8'),
+        ),
+        Trainer(
+                name='John',
+                username='John045',
+                password=bcrypt.generate_password_hash('johnisnotmyname321').decode('utf-8'),
+        ),
+        Trainer(
+                name='Lara',
+                username='Lara007',
+                password=bcrypt.generate_password_hash('tombraider2345').decode('utf-8'),
+        ),
+    ]
+    db.session.add_all(trainers)
+    db.session.commit()
+
+
+
+# printing a message to ensure that data has been inserted successfully
+print("Pokemons and trainers have been added to the database!")

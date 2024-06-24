@@ -3,6 +3,8 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
 from flask_marshmallow import Marshmallow
+from flask_bcrypt import Bcrypt
+
 
 
 # used to define classes mapped to relational database tables
@@ -19,3 +21,4 @@ app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('DB_URI')
 db = SQLAlchemy(model_class=Base)
 db.init_app(app)
 ma = Marshmallow(app)
+bcrypt = Bcrypt(app)
