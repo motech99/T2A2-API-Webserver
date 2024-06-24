@@ -28,7 +28,7 @@ pokemon_types = Enum(
 
 
 class Pokemon(db.Model):
-    # setting the tablename name
+    # setting the table name
     __tablename__ = "pokemons"
 
     # creating Columns, IDs are always primary keys
