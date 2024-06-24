@@ -9,8 +9,8 @@ class Trainer(db.Model):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(200))
-    username: Mapped[str] = mapped_column(Text(), unique=True)
-    password: Mapped[str] = mapped_column(String(100))
+    username: Mapped[str] = mapped_column(Text(), unique=True, nullable=False)
+    password: Mapped[str] = mapped_column(String(100), nullable=False)
 
 
 class TrainerSchema(ma.Schema):

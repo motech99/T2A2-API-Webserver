@@ -18,7 +18,12 @@ app = Flask(__name__)
 app.config['JWT_SECRET_KEY'] = environ.get('JWT_KEY')
 app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('DB_URI')
 
+
+# Initialise SQLAlchemy
 db = SQLAlchemy(model_class=Base)
+# Bind SQLAlchemy to the Flask app
 db.init_app(app)
+# Initialise Marshmallow for object serialisation/deserialisation
 ma = Marshmallow(app)
+# Initialise Bcrypt for password hashing
 bcrypt = Bcrypt(app)
