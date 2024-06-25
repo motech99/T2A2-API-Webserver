@@ -18,4 +18,4 @@ class Trainer(db.Model):
 class TrainerSchema(ma.Schema):
     
     class Meta:
-        fields = ("id", "name", "username", "password")
+        fields = ("id", "name", "email", "username", "password", "admin")

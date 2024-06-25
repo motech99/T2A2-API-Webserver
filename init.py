@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
 from flask_marshmallow import Marshmallow
 from flask_bcrypt import Bcrypt
+from flask_jwt_extended import JWTManager
 
 
 # used to define classes mapped to relational database tables
@@ -30,3 +31,6 @@ ma = Marshmallow(app)
 
 # Initialise Bcrypt for password hashing
 bcrypt = Bcrypt(app)
+
+# initalise JWTManager
+jwt = JWTManager(app)
