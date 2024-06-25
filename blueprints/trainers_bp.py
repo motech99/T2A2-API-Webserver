@@ -1,5 +1,5 @@
 from datetime import timedelta
-from flask import Blueprint, request, abort
+from flask import Blueprint, request, abort, jsonify
 from sqlalchemy import and_, or_
 from flask_jwt_extended import create_access_token, jwt_required
 from init import db, bcrypt
@@ -104,7 +104,7 @@ def create_trainer():
 def update_trainer(id):
     # Retrieve the trainer with the specified ID from the database
     trainer = db.get_or_404(Trainer, id)
-     # Only allow updates to specified fields (name, username, email, password)
+    # Only allow updates to specified fields (name, username, email, password)
     trainer_info = TrainerSchema(
         only=["name", "username", "email", "password"], unknown="exclude"
     ).load(request.json)
@@ -112,19 +112,23 @@ def update_trainer(id):
     # Check for existing username (if changed)
     if trainer_info.get("username") and trainer_info["username"] != trainer.username:
         # Check if a trainer with the new username already exists
-        existing_username = db.session.query(Trainer).filter_by(
-            username=trainer_info["username"]
-        ).first()
+        existing_username = (
+            db.session.query(Trainer)
+            .filter_by(username=trainer_info["username"])
+            .first()
+        )
         if existing_username:
             # Raise a 400 Bad Request error
             abort(400, description="Username already registered")
 
     # Check for existing email (if changed) (similar logic as username)
     if trainer_info.get("email") and trainer_info["email"] != trainer.email:
-        existing_email = db.session.query(Trainer).filter_by(email=trainer_info["email"]).first()
+        existing_email = (
+            db.session.query(Trainer).filter_by(email=trainer_info["email"]).first()
+        )
         if existing_email:
             abort(400, description="Email already registered")
-    # Update trainer fields with provided data (or keep existing values)       
+    # Update trainer fields with provided data (or keep existing values)
     trainer.name = trainer_info.get("name", trainer.name)
     trainer.username = trainer_info.get("username", trainer.username)
     trainer.email = trainer_info.get("email", trainer.email)
@@ -135,4 +139,15 @@ def update_trainer(id):
     # Save changes to the database
     db.session.commit()
     # return the data that is relvant fields (name, username, email)
-    return TrainerSchema(only=["name", "username", "email",]).dump(trainer), 200
+    return TrainerSchema(only=["name","username","email"]).dump(trainer), 200
+    
+# Delete an existing Trainer (D)
+@trainers_bp.route("/delete/<int:id>", methods=['DELETE'])
+@jwt_required()
+def delete_trainer(id):
+    # Fetch a Trainer record by ID, raising 404 if not found
+    trainer = db.get_or_404(Trainer, id)
+    # Delete the trainer object
+    db.session.delete(trainer)
+    db.session.commit()
+    return jsonify({"message": "The trainer has successfully been deleted!"})
