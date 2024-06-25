@@ -1,7 +1,7 @@
 from datetime import timedelta
 from flask import Blueprint, request, abort
 from sqlalchemy import and_, or_
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, jwt_required
 from init import db, bcrypt
 from models.trainer import Trainer, TrainerSchema
 from auth import admin_only
@@ -59,7 +59,7 @@ def one_trainer(id):
     return TrainerSchema(only=["name", "username"]).dump(trainer)
 
 
-# Create a Trainer (R)
+# Create a Trainer (C)
 @trainers_bp.route("/create", methods=["POST"])
 def create_trainer():
     # Deserialise the requested data, excluding any unknown fields
@@ -68,12 +68,16 @@ def create_trainer():
     ).load(request.json)
 
     # Check for existing username or email
-    existing_trainer = db.session.query(Trainer).filter(
-        or_(
-            Trainer.username == trainer_info["username"],
-            Trainer.email == trainer_info["email"],
+    existing_trainer = (
+        db.session.query(Trainer)
+        .filter(
+            or_(
+                Trainer.username == trainer_info["username"],
+                Trainer.email == trainer_info["email"],
+            )
         )
-    ).first()
+        .first()
+    )
     if existing_trainer:
         # Raise an error if the trainer already exists
         abort(400, description="This trainer is already registered!")
@@ -92,4 +96,43 @@ def create_trainer():
     # Commit changes to the database
     db.session.commit()
     # Serialise the newly created trainer and return with 201 successfully Created status
-    return TrainerSchema(only=['name','username','email']).dump(trainer), 201
+    return TrainerSchema(only=["name", "username", "email"]).dump(trainer), 201
+
+
+# update an existing trainer (U)
+@trainers_bp.route("/update/<int:id>", methods=["PUT", "PATCH"])
+def update_trainer(id):
+    # Retrieve the trainer with the specified ID from the database
+    trainer = db.get_or_404(Trainer, id)
+     # Only allow updates to specified fields (name, username, email, password)
+    trainer_info = TrainerSchema(
+        only=["name", "username", "email", "password"], unknown="exclude"
+    ).load(request.json)
+
+    # Check for existing username (if changed)
+    if trainer_info.get("username") and trainer_info["username"] != trainer.username:
+        # Check if a trainer with the new username already exists
+        existing_username = db.session.query(Trainer).filter_by(
+            username=trainer_info["username"]
+        ).first()
+        if existing_username:
+            # Raise a 400 Bad Request error
+            abort(400, description="Username already registered")
+
+    # Check for existing email (if changed) (similar logic as username)
+    if trainer_info.get("email") and trainer_info["email"] != trainer.email:
+        existing_email = db.session.query(Trainer).filter_by(email=trainer_info["email"]).first()
+        if existing_email:
+            abort(400, description="Email already registered")
+    # Update trainer fields with provided data (or keep existing values)       
+    trainer.name = trainer_info.get("name", trainer.name)
+    trainer.username = trainer_info.get("username", trainer.username)
+    trainer.email = trainer_info.get("email", trainer.email)
+    # Update password if provided in the request data (hashed for security)
+    trainer.password = bcrypt.generate_password_hash(
+        trainer_info.get("password", trainer.password)
+    ).decode("utf-8")
+    # Save changes to the database
+    db.session.commit()
+    # return the data that is relvant fields (name, username, email)
+    return TrainerSchema(only=["name", "username", "email",]).dump(trainer), 200

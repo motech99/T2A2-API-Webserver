@@ -68,5 +68,5 @@ def db_create():
     db.session.commit()
 
 
-# printing a message to ensure that data has been inserted successfully
-print("Pokemons and trainers have been added to the database!")
+    # printing a message to ensure that data has been inserted successfully
+    print("Pokemons and trainers have been added to the database!")
