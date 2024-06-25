@@ -3,7 +3,7 @@ from init import db
 from models.trainer import Trainer
 
 
-# Route decorator to ensure JWT user is an admin
+# Route decorator to ensure JWT trainer is an admin
 def admin_only(fn):
     @jwt_required()
     def inner():
