@@ -62,7 +62,7 @@ def one_trainer(id):
 # Create a Trainer (C)
 @trainers_bp.route("/create", methods=["POST"])
 def create_trainer():
-    # Deserialise the requested data, excluding any unknown fields
+    # # Load the requested "only" Trainer data from the request body using TrainerSchema
     trainer_info = TrainerSchema(
         only=["name", "username", "email", "password"], unknown="exclude"
     ).load(request.json)
@@ -127,6 +127,7 @@ def update_trainer(id):
             db.session.query(Trainer).filter_by(email=trainer_info["email"]).first()
         )
         if existing_email:
+            # Raise a 400 Bad Request error
             abort(400, description="Email already registered")
     # Update trainer fields with provided data (or keep existing values)
     trainer.name = trainer_info.get("name", trainer.name)
@@ -139,10 +140,11 @@ def update_trainer(id):
     # Save changes to the database
     db.session.commit()
     # return the data that is relvant fields (name, username, email)
-    return TrainerSchema(only=["name","username","email"]).dump(trainer), 200
-    
+    return TrainerSchema(only=["name", "username", "email"]).dump(trainer), 200
+
+
 # Delete an existing Trainer (D)
-@trainers_bp.route("/delete/<int:id>", methods=['DELETE'])
+@trainers_bp.route("/delete/<int:id>", methods=["DELETE"])
 @jwt_required()
 def delete_trainer(id):
     # Fetch a Trainer record by ID, raising 404 if not found
