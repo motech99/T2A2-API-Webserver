@@ -1,6 +1,7 @@
 from datetime import date
-from flask import Blueprint, request, abort
+from flask import Blueprint, request, abort, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
+
 # from auth import authroize_owner
 from init import db
 from models.pokemon import Pokemon, PokemonSchema, pokemon_types
@@ -32,27 +33,30 @@ def get_one_pokemon(id):
     # Creates a PokemonSchema object to serialise the Pokemon object into JSON format
     return PokemonSchema().dump(pokemon)
 
+
 # This route handler function adds a pokemon object to the database
 # and returns it in JSON format (C)
-@pokemons_bp.route("/create", methods=['POST'])
+@pokemons_bp.route("/create", methods=["POST"])
 def adding_pokemon():
     # Load the Pokemon data from the request body using PokemonSchema
-    pokemon_info = PokemonSchema(only=["name", "type", "ability"], unknown="exclude").load(
-        request.json
-    )
-    # Capitalise the first letter of the type
+    pokemon_info = PokemonSchema(
+        only=["name", "type", "ability"], unknown="exclude"
+    ).load(request.json)
+    # Capitalise the first letter of the type to avoid errors
     pokemon_type = pokemon_info["type"].capitalize()
     # checks if the pokemon type matches with the existing types in the models
     if pokemon_type not in pokemon_types.enums:
         # if it does not match it sends out an error
-        abort(400, description=f"This is a Invalid Pokemon type: {pokemon_info['type']}")
+        abort(
+            400, description=f"This is a Invalid Pokemon type: {pokemon_info['type']}"
+        )
 
     # Create a new Pokemon object with the provided information
     pokemon = Pokemon(
-            name=pokemon_info["name"],
-            type=pokemon_info["type"].capitalize(),
-            ability=pokemon_info["ability"],
-            date_caught=date.today(),
+        name=pokemon_info["name"],
+        type=pokemon_info["type"].capitalize(),
+        ability=pokemon_info["ability"],
+        date_caught=date.today(),
     )
     # Add the new Pokemon to the database session
     db.session.add(pokemon)
@@ -60,3 +64,47 @@ def adding_pokemon():
     db.session.commit()
     # Return the newly created Pokemon data as JSON with a 201 sucessful Created status code
     return PokemonSchema().dump(pokemon), 201
+
+
+# This route handler function that updates a existing pokemon object in the database
+# and returns it in JSON format upon successful update (U)
+@pokemons_bp.route("/update/<int:id>", methods=["PUT", "PATCH"])
+@jwt_required()
+def update_pokemon(id):
+    
+    # Fetch the Pokemon object with the given ID from the database
+    # Raise a 404 error if the Pokemon is not found
+    pokemon = db.get_or_404(Pokemon, id)
+    # Use PokemonSchema to validate and deserialise the incoming JSON data
+    # Only allow updates to "name", "type", and "ability" fields ignoring any unknown fields
+    pokemon_info = PokemonSchema(
+        only=["name", "type", "ability"], unknown="exclude"
+    ).load(request.json)
+    # Capitalise the first letter of the type to avoid errors
+    pokemon_type = pokemon_info["type"].capitalize()
+    # checks if the pokemon type matches with the existing types in the models
+    if pokemon_type not in pokemon_types.enums:
+    # if it does not match it sends out an error
+        abort(
+            400, description=f"This is a Invalid Pokemon type: {pokemon_info['type']}"
+        )
+    # Update the Pokemon object's attributes with the provided data
+    pokemon.name = pokemon_info.get('name', pokemon.name)
+    pokemon.type = pokemon_info.get('type', pokemon.type).capitalize()
+    pokemon.ability = pokemon_info.get('ability', pokemon.ability)
+    # Commit the changes to the database
+    db.session.commit()
+    # Return a 200 OK response with the only requested JSON representation
+    return PokemonSchema(only=['name', 'type', 'ability']).dump(pokemon), 200
+
+
+# Delete an existing Pokemon (D)
+@pokemons_bp.route("/delete/<int:id>", methods=["DELETE"])
+@jwt_required()
+def delete_pokemon(id):
+    # Fetch a pokemon record by ID, raising 404 if not found
+    pokemon = db.get_or_404(Pokemon, id)
+    # Delete the pokemon object
+    db.session.delete(pokemon)
+    db.session.commit()
+    return jsonify({"message": "The pokemon has successfully been deleted!"})
