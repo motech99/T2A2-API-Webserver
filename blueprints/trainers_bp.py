@@ -1,10 +1,10 @@
 from datetime import timedelta
 from flask import Blueprint, request, abort, jsonify
 from sqlalchemy import and_, or_
-from flask_jwt_extended import create_access_token, jwt_required
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from init import db, bcrypt
 from models.trainer import Trainer, TrainerSchema
-from auth import admin_only
+from auth import admin_only, authorize_owner_trainer
 
 # Prefixing the URL for the 'trainers' blueprint with '/trainers' to route related endpoints
 trainers_bp = Blueprint("trainers", __name__, url_prefix="/trainers")
@@ -101,9 +101,11 @@ def create_trainer():
 
 # update an existing trainer (U)
 @trainers_bp.route("/update/<int:id>", methods=["PUT", "PATCH"])
+@jwt_required()
 def update_trainer(id):
     # Retrieve the trainer with the specified ID from the database
     trainer = db.get_or_404(Trainer, id)
+    authorize_owner_trainer(trainer)
     # Only allow updates to specified fields (name, username, email, password)
     trainer_info = TrainerSchema(
         only=["name", "username", "email", "password"], unknown="exclude"
@@ -149,6 +151,7 @@ def update_trainer(id):
 def delete_trainer(id):
     # Fetch a Trainer record by ID, raising 404 if not found
     trainer = db.get_or_404(Trainer, id)
+    authorize_owner_trainer(trainer)
     # Delete the trainer object
     db.session.delete(trainer)
     db.session.commit()

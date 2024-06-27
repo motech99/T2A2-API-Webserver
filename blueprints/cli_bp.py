@@ -17,42 +17,19 @@ def db_create():
     db.create_all()
 
     # Inserting Data in DB
-    pokemons = [
-        Pokemon(
-            name="Squirtle",
-            type="Water",
-            ability="Torrent",
-            date_caught=date.today(),
-        ),
-        Pokemon(
-            name="Charmander",
-            type="Fire",
-            ability="Blaze",
-            date_caught=date(2024, 1, 14),
-        ),
-        Pokemon(
-            name="Pikachu",
-            type="Electric",
-            ability="Static",
-            date_caught=date(2023, 12, 25),
-        ),
-    ]
-    # Similar to the Git commit command, we are adding them to the database and comitting
-    db.session.add_all(pokemons)
-    db.session.commit()
 
     trainers = [
         Trainer(
             name="Mohammed Hani",
             username="mo123",
-            email='mo@email.com',
+            email="mo@email.com",
             password=bcrypt.generate_password_hash("potatoismyfav123").decode("utf-8"),
             admin=True,
         ),
         Trainer(
             name="John",
             username="John045",
-            email='johnno@email.com',
+            email="johnno@email.com",
             password=bcrypt.generate_password_hash("johnisnotmyname321").decode(
                 "utf-8"
             ),
@@ -60,13 +37,46 @@ def db_create():
         Trainer(
             name="Lara",
             username="Lara007",
-            email='lara123@email.com',
+            email="lara123@email.com",
             password=bcrypt.generate_password_hash("tombraider2345").decode("utf-8"),
         ),
     ]
     db.session.add_all(trainers)
     db.session.commit()
 
+    pokemons = [
+        Pokemon(
+            name="Squirtle",
+            type="Water",
+            ability="Torrent",
+            date_caught=date.today(),
+            trainer=trainers[0],
+        ),
+        Pokemon(
+            name="Charmander",
+            type="Fire",
+            ability="Blaze",
+            date_caught=date(2024, 1, 14),
+            trainer=trainers[1],
+        ),
+        Pokemon(
+            name="Pikachu",
+            type="Electric",
+            ability="Static",
+            date_caught=date(2023, 12, 25),
+            trainer=trainers[2],
+        ),
+        Pokemon(
+            name="Mewtwo",
+            type="Psychic",
+            ability="telekinesis",
+            date_caught=date(2023, 12, 25),
+            trainer=trainers[2],
+        ),
+    ]
+    # Similar to the Git commit command, we are adding them to the database and comitting
+    db.session.add_all(pokemons)
+    db.session.commit()
 
     # printing a message to ensure that data has been inserted successfully
     print("Pokemons and trainers have been added to the database!")
