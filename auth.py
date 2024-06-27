@@ -1,6 +1,8 @@
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from init import db
+from sqlalchemy.orm import Session
 from models.trainer import Trainer
+from models.pokemon import Pokemon
 from flask import abort, jsonify, make_response
 
 
@@ -18,7 +20,8 @@ def admin_only(fn):
         
     return inner
 
-# Ensure that the JWT trainer is the owner of the given Pokemon
+
+# Ensure that the JWT trainer is the owner of the given pokemon
 def authorize_owner_pokemon(pokemon):
     trainer_id = get_jwt_identity()
     if trainer_id != pokemon.trainer_id:

@@ -64,7 +64,7 @@ def db_create():
             type="Electric",
             ability="Static",
             date_caught=date(2023, 12, 25),
-            trainer=trainers[2],
+            trainer=trainers[1],
         ),
         Pokemon(
             name="Mewtwo",

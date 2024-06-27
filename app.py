@@ -22,3 +22,10 @@ def not_found():
 @app.errorhandler(ValidationError)
 def invalid_request(err):
     return jsonify({"error": vars(err)["messages"]}), 400
+
+
+@app.errorhandler(404)
+def not_found(error=None):
+    # Construct a custom error message or use the default one
+    error_message = "Not Found" if error is None else str(error)
+    return jsonify({"error": error_message}), 404

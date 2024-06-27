@@ -56,7 +56,9 @@ class PokemonSchema(ma.Schema):
         ],
         required=True,
     )
-    trainer = fields.Nested("TrainerSchema", exclude=["password"])
+    trainer = fields.Nested("TrainerSchema", exclude=["password", "admin", "id", "email"], allow_none=True)
 
     class Meta:
-        fields = ("id", "name", "type", "ability", "date_caught")
+        fields = ("id", "name", "type", "ability", "date_caught", "trainer")
+    
+
