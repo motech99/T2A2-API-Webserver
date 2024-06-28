@@ -70,7 +70,7 @@ Flask-JWT-Extended is a Flask extension for implementing JSON Web Tokens (JWT) b
 
 ### 9. PyJWT
 
-PyJWT is a Python library for working with JSON Web Tokens (JWT). It helps you encode and decode JWT tokens used in Flask-JWT-Extended.
+PyJWT is a Python library for working with JSON Web Tokens (JWT). It helps encode and decode JWT tokens used in Flask-JWT-Extended.
 
 ### 10. python-dotenv
 
@@ -82,50 +82,154 @@ psycopg2-binary is a library for connecting to PostgreSQL databases from Python.
 
 ## R4 Database System: Benefits and Drawbacks
 
+### Benefits and Drawbacks of PostgreSQL
+
+PostgreSQL is a widely used open-source object-relational database management system (ORDBMS) known for its robust features. Below are some of its advantages and disadvantages:
+
+### Advantages
+
+- **Robust Object-Relational Mapping (ORM):** PostgreSQL provides strong support for ORM frameworks like SQLAlchemy, which is utilised in my application. This simplifies data interaction by enabling the use of Python classes to map to database tables, resulting in cleaner and more maintainable code.
+
+- **ACID Transactions:** PostgreSQL follows ACID properties for transactions, ensuring data integrity and consistency, especially in scenarios with simultaneous database access by multiple users or processes. This is essential for maintaining accurate data in my Pokemon API application.
+
+- **Scalability:** PostgreSQL efficiently handles large datasets and high volumes of concurrent connections, allowing horizontal scaling by adding more servers or vertical scaling by increasing resources on the existing server as a Flask API grows in popularity and user base.
+
+- **Rich Feature Set:** PostgreSQL offers various advanced features, including stored procedures and functions for custom logic, user-defined types (UDTs) tailored to specific application needs, and advanced indexing to enhance query performance.
+
+- **Open-Source and Community-Driven:** Being open-source, PostgreSQL provides significant cost savings compared to restricted database systems. It also benefits from an active and extensive community providing documentation, tutorials, and support.
+
+### Drawbacks
+
+- **Learning Curve:** While ORM frameworks like SQLAlchemy simplify data interaction, understanding relational database concepts and SQL fundamentals is still necessary for effective database management.
+
+- **Complexity for Simple Applications:** For very small-scale applications with basic data needs, PostgreSQL's feature set might be more complex than required, and simpler NoSQL databases might be a better fit.
+
+- **Potential Performance Overhead for Complex Queries:** Complex queries with many joins or aggregations may tax PostgreSQL resources, requiring careful query optimisation in such cases.
+
+- **Potential Challenges in High Availability Configurations:** Setting up high availability with failover capabilities can be more complex with PostgreSQL compared to some managed database services.
+
 ## R5 ORM: Features and Functionalities
+
+### Model Definition and Mapping
+
+ **Classes as Tables:** Define database tables as Python classes. Each class attribute directly maps to a column in the corresponding table, creating a natural representation of the data schema.
+
+**Data Types:** ORMs handle data type conversions between Python types, for example, integers or strings and their corresponding database equivalents `INT` or `VARCHAR`
+
+**Relationships:** can define relationships between models, reflecting how data tables are connected in the database, for example, one-to-many or many-to-many. This simplifies working with complex data structures.
+
+```python
+class Pokemon(db.Model):
+    __tablename__ = "pokemons"
+    
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String(100), nullable=False)
+    type: Mapped[str] = mapped_column(pokemon_types, nullable=False)
+    ability: Mapped[str] = mapped_column(String(100), nullable=False)
+    date_caught: Mapped[date] = mapped_column()
+    trainer_id: Mapped[int] = mapped_column(ForeignKey("trainers.id"), nullable=True)
+    trainer: Mapped["Trainer"] = relationship("Trainer", back_populates="pokemons")
+```
+
+#### In this example
+
+`__tablename__` specifies the table name in the database. `Columns id`, `name`, `type`, `ability`, `date_caught`, and `trainer_id` are mapped to corresponding columns in the `Pokemons` table. Relationships (foreign keys) are managed using ForeignKey and relationship.
+
+### Data Validation and Serialization
+
+ORM systems often integrate with libraries such as Marshmallow to handle data validation and serialization, ensuring that data conforms to specified formats before being inserted into the database and when being retrieved.
+
+```python
+class PokemonSchema(ma.Schema):
+    name = fields.String(
+        validate=[
+            Regexp("^[a-zA-Z]+$", error="Pokemon name must contain only letters."),
+        ],
+        required=True,
+    )
+    trainer = fields.Nested("TrainerSchema", exclude=["password", "admin", "id", "email"], allow_none=True)
+
+    class Meta:
+        fields = ("id", "name", "type", "ability", "date_caught", "trainer")
+```
+
+#### in this example
+
+The schema validates that the `name` contains only letters.
+
+It also Handles nested relationships, such as the relationship between `Pokemon` and `Trainer`.
+
+### CRUD Operations
+
+ORM offers a simplified interface for Create, Read, Update, and Delete (CRUD) operations, reducing the need to write complex SQL queries.
+For example, adding new trainers and Pokemon.
+
+```python
+# Adding new trainers
+trainers = [
+    Trainer(
+        name="Mohammed",
+        username="mo123",
+        email="mo@email.com",
+        password=bcrypt.generate_password_hash("potatoismyfav123").decode("utf-8"),
+        admin=True,
+        team="Mystic",
+    ),
+    Trainer(
+        name="John",
+        username="John045",
+        email="johnno@email.com",
+        password=bcrypt.generate_password_hash("johnisnotmyname321").decode("utf-8"),
+        team="Valor",
+    ),
+]
+db.session.add_all(trainers)
+db.session.commit()
+
+# Adding new Pokemon
+pokemons = [
+    Pokemon(
+        name="Squirtle",
+        type="Water",
+        ability="Torrent",
+        date_caught=date.today(),
+        trainer=trainers[0],
+    ),
+    Pokemon(
+        name="Charmander",
+        type="Fire",
+        ability="Blaze",
+        date_caught=date(2024, 1, 14),
+        trainer=trainers[1],
+    ),
+    ]
+db.session.add_all(pokemons)
+db.session.commit()
+```
+
+These examples demonstrate the ease of adding records to the database using the ORM's session management and commit functions.
 
 ## R6 Models and Relationships
 
 ![1](./docs/pokemon-ERD.png)
 
-The Entity Relationship Diagram (ERD) offers a clear visual representation of the database structure, making it easier to understand the relationships between different entities. It helps organise the data in a structured manner, ensuring that all necessary entities and their attributes are accounted for.
+The Entity Relationship Diagram (ERD) offers a clear visual representation of the database structure, making it easier to understand the relationships between different entities. It helps organize the data in a structured manner, ensuring that all necessary entities and their attributes are accounted for.
 
-### The database consists of five main tables
+### The database consists of two main tables
 
 ### Pokemon
 
-- **Attributes:** Pokemon_Id (PK), name, type, ability, date_caught
-- **Description:** The Pokemon table contains information about each Pokémon.
-- **Primary Key:** Pokemon_Id uniquely identifies each Pokémon
-
-### Moves
-
-- **Attributes:** Moves_Id (PK), name, power, accuracy, type, category
-- **Description:** The Moves table stores information about each move that Pokémon can learn.
-- **Primary Key:** Moves_Id uniquely identifies each move.
-
-### Pokemon_Moves
-
-- **Attributes:** Pokemon_Id (FK), Moves_Id (FK)
-- **Description:** The Pokemon_Moves table establishes a many-to-many relationship between Pokémon and their moves.
-- **Foreign Keys:**
-  - **Pokemon_Id** references Pokemon_Id in the Pokemon table.
-  - **Moves_Id** references Moves_Id in the Moves table.
-- **Purpose:** Allows each Pokémon to have multiple moves and each move to be learned by multiple Pokémon.
+- **Attributes:** Pokemon_Id (PK), name, type, ability, date_caught, trainer_id (FK)
+- **Description:** The Pokemon table contains information about each Pokemon.
+- **Primary Key:** Pokemon_id uniquely identifies each Pokemon
+- **Foriegn Key:** trainer_id references the trainer_id in the trainers table.
 
 ### Trainers
 
-- **Attributes:** Trainer_ID (PK), name, username, password, gym_id (FK)
+- **Attributes:** Trainer_ID (PK), name, username, email, password, gym, admin
 - **Description:** The Trainers table stores information about each trainer, including their credentials for authentication and their affiliation with a specific gym.
 - **Primary Key:** Trainer_ID uniquely identifies each trainer.
 - **Foreign Key:** gym_id references Gym_id in the Gyms table.
-
-### Gyms
-
-- **Attributes:** Gym_id (PK), Name, Team
-- **Description:** The gym's table captures details about each gym, including their team affiliation.
-- **Primary Key:** Gym_id uniquely identifies each gym.
-- **Team:** Indicates the team (Mystic, Valor, Instinct)
 
 ### Benefits of the ERD in Database Design
 
@@ -137,7 +241,7 @@ The Entity Relationship Diagram (ERD) offers a clear visual representation of th
 
 #### Normalisation
 
-**Avoiding Redundancy:** The ERD helps in normalising the database by eliminating redundant data. For example, moves are stored separately in the Moves table and linked to Pokémon through the Pokemon_Moves table.
+**Avoiding Redundancy:** The ERD helps in normalising the database by eliminating redundant data. For example, moves are stored separately in the Moves table and linked to Pokemon through the Pokemon_Moves table.
 
 **Data Integrity:** Ensures that data is stored in only one place, reducing the chances of data anomalies and maintaining consistency.
 
@@ -145,7 +249,7 @@ The Entity Relationship Diagram (ERD) offers a clear visual representation of th
 
 **Foreign Keys:** The use of foreign keys (FK) enforces referential integrity, ensuring that relationships between tables are maintained correctly. For instance, Pokemon_Id in Pokemon_Moves must match a valid Pokemon_Id in the Pokemon table.
 
-**Relationships:** Clearly defines how entities relate to each other (one-to-many, many-to-many), aiding in the correct implementation of business rules. For example, the many-to-many relationship between Pokémon and Moves allows for flexibility in assigning moves to Pokémon.
+**Relationships:** Clearly defines how entities relate to each other (one-to-many, many-to-many), aiding in the correct implementation of business rules. For example, the many-to-many relationship between Pokemon and Moves allows for flexibility in assigning moves to Pokemon.
 
 ## R7 Database Implementation During Development
 

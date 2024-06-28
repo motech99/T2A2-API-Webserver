@@ -106,7 +106,7 @@ def create_trainer():
     # Commit changes to the database
     db.session.commit()
     # Serialise the newly created trainer and return with 201 successfully Created status
-    return TrainerSchema(only=["name", "username", "email"]).dump(trainer), 201
+    return TrainerSchema(only=["name", "username", "email", "team"]).dump(trainer), 201
 
 
 # update an existing trainer (U)

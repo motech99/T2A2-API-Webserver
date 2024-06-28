@@ -1,9 +1,9 @@
 from flask import jsonify
+from marshmallow.exceptions import ValidationError
 from init import app
-from blueprints.cli_bp import db_commands 
-from blueprints.trainers_bp import trainers_bp  
-from blueprints.pokemons_bp import pokemons_bp  
-from marshmallow.exceptions import ValidationError  
+from blueprints.cli_bp import db_commands
+from blueprints.trainers_bp import trainers_bp
+from blueprints.pokemons_bp import pokemons_bp
 
 # Register blueprints with the Flask application
 app.register_blueprint(db_commands)
@@ -24,7 +24,7 @@ def invalid_request(err):
     """Returns a JSON response with validation error messages for ValidationError"""
     return jsonify({"error": vars(err)["messages"]}), 400
 
-# Specific error handler for 404 (Not Found) errors (can be removed if redundant)
+# Specific error handler for 404 None (Not Found) errors
 @app.errorhandler(404)
 def not_found_error(error=None):
     """Returns a JSON response with a more informative 'error' message for 404"""

@@ -26,7 +26,7 @@ def all_pokemons():
 @jwt_required()
 def get_owned_pokemons():
     trainer_id = get_jwt_identity()
-    # Create a SQLAlchemy select statement to retrieve all Pokémon objects owned by the trainer
+    # Create a SQLAlchemy select statement to retrieve all Pokemon objects owned by the trainer
     stmt = db.select(Pokemon).where(Pokemon.trainer_id == trainer_id)
     # Execute the statement and fetch all results as a list
     owned_pokemons = db.session.scalars(stmt).all()
@@ -48,7 +48,6 @@ def get_one_pokemon(id):
     authorize_owner_pokemon(pokemon)
     # Creates a PokemonSchema object to serialise the Pokemon object into JSON format
     return PokemonSchema().dump(pokemon)
-
 
 # This route handler function adds a pokemon object to the database
 # and returns it in JSON format (C)

@@ -1,9 +1,7 @@
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from init import db
-from sqlalchemy.orm import Session
-from models.trainer import Trainer
-from models.pokemon import Pokemon
 from flask import abort, jsonify, make_response
+from init import db
+from models.trainer import Trainer
 
 
 # Route decorator to ensure JWT trainer is an admin

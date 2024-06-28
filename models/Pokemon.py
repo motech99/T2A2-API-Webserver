@@ -28,37 +28,37 @@ pokemon_types = Enum(
     name="pokemon_types",
 )
 
+
 # Defining the Pokemon model
 class Pokemon(db.Model):
     """
     This class represents a Pokemon in the database.
     """
 
-    # Setting the table name
+    # setting the table name
     __tablename__ = "pokemons"
 
     # Defining model attributes (columns)
     id: Mapped[int] = mapped_column(primary_key=True)
-        # Primary key for the table
+    # Primary key for the table
 
     name: Mapped[str] = mapped_column(String(100), nullable=False)
-        # Pokemon name (string, not nullable)
+    # Pokemon name (string, not nullable)
 
     type: Mapped[str] = mapped_column(pokemon_types, nullable=False)
-        # Pokemon type (uses the 'pokemon_types' Enum)
+    # Pokemon type (uses the 'pokemon_types' Enum)
 
     ability: Mapped[str] = mapped_column(String(100), nullable=False)
-        # Pokemon ability (string, not nullable)
+    # Pokemon ability (string, not nullable)
 
-    date_caught: Mapped[date] = mapped_column()
-        # Date the Pokemon was caught
+    date_caught: Mapped[date]
+    # Date the Pokemon was caught
 
     trainer_id: Mapped[int] = mapped_column(ForeignKey("trainers.id"), nullable=True)
-        # Foreign key referencing the 'trainers' table
+    # Foreign key referencing the 'trainers' table
 
-    trainer: Mapped["Trainer"] = relationship(
-        "Trainer", backref="pokemons"
-    )  # Relationship with the 'Trainer' model
+    trainer: Mapped["Trainer"] = relationship(back_populates="pokemons")
+     # Relationship with the 'Trainer' model
 
 # Defining the PokemonSchema for serialisation and validation
 class PokemonSchema(ma.Schema):
@@ -66,7 +66,6 @@ class PokemonSchema(ma.Schema):
     This class defines the Marshmallow schema for the Pokemon model.
     It specifies how Pokemon objects are serialised and validated.
     """
-
     name = fields.String(
         validate=[
             Regexp(
@@ -76,7 +75,9 @@ class PokemonSchema(ma.Schema):
         ],
         required=True,
     )
-    trainer = fields.Nested("TrainerSchema", exclude=["password", "admin", "id", "email"], allow_none=True)
+    trainer = fields.Nested(
+        "TrainerSchema", exclude=["password", "admin", "id", "email"], allow_none=True
+    )
 
     class Meta:
         fields = ("id", "name", "type", "ability", "date_caught", "trainer")
