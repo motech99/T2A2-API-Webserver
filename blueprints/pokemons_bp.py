@@ -2,8 +2,6 @@ from datetime import date
 from flask import Blueprint, request, abort, jsonify, make_response
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from auth import admin_only, authorize_owner_pokemon
-
-# from auth import authroize_owner
 from init import db
 from models.pokemon import Pokemon, PokemonSchema, pokemon_types
 

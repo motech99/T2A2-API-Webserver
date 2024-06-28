@@ -5,7 +5,7 @@ from marshmallow import fields
 from marshmallow.validate import Regexp
 from init import db, ma
 
-# Creating pokemon types
+# Creating an Enum for Pokemon types
 pokemon_types = Enum(
     "Normal",
     "Fire",
@@ -28,25 +28,45 @@ pokemon_types = Enum(
     name="pokemon_types",
 )
 
-
+# Defining the Pokemon model
 class Pokemon(db.Model):
-    # setting the table name
+    """
+    This class represents a Pokemon in the database.
+    """
+
+    # Setting the table name
     __tablename__ = "pokemons"
 
-    # creating Columns, IDs are always primary keys
+    # Defining model attributes (columns)
     id: Mapped[int] = mapped_column(primary_key=True)
+        # Primary key for the table
 
     name: Mapped[str] = mapped_column(String(100), nullable=False)
+        # Pokemon name (string, not nullable)
+
     type: Mapped[str] = mapped_column(pokemon_types, nullable=False)
+        # Pokemon type (uses the 'pokemon_types' Enum)
+
     ability: Mapped[str] = mapped_column(String(100), nullable=False)
-    date_caught: Mapped[date]
+        # Pokemon ability (string, not nullable)
+
+    date_caught: Mapped[date] = mapped_column()
+        # Date the Pokemon was caught
 
     trainer_id: Mapped[int] = mapped_column(ForeignKey("trainers.id"), nullable=True)
-    trainer: Mapped["Trainer"] = relationship(back_populates="pokemons")
+        # Foreign key referencing the 'trainers' table
 
+    trainer: Mapped["Trainer"] = relationship(
+        "Trainer", backref="pokemons"
+    )  # Relationship with the 'Trainer' model
 
-# Creating a Marshmallow Schema to serialise and validate SQLAlchemy Models
+# Defining the PokemonSchema for serialisation and validation
 class PokemonSchema(ma.Schema):
+    """
+    This class defines the Marshmallow schema for the Pokemon model.
+    It specifies how Pokemon objects are serialised and validated.
+    """
+
     name = fields.String(
         validate=[
             Regexp(
@@ -60,5 +80,3 @@ class PokemonSchema(ma.Schema):
 
     class Meta:
         fields = ("id", "name", "type", "ability", "date_caught", "trainer")
-    
-

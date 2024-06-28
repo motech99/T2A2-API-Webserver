@@ -20,7 +20,6 @@ def admin_only(fn):
         
     return inner
 
-
 # Ensure that the JWT trainer is the owner of the given pokemon
 def authorize_owner_pokemon(pokemon):
     trainer_id = get_jwt_identity()

@@ -3,7 +3,7 @@ from flask import Blueprint, request, abort, jsonify
 from sqlalchemy import and_, or_
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from init import db, bcrypt
-from models.trainer import Trainer, TrainerSchema
+from models.trainer import Trainer, TrainerSchema, gym_types
 from auth import admin_only, authorize_owner_trainer
 
 # Prefixing the URL for the 'trainers' blueprint with '/trainers' to route related endpoints
@@ -44,7 +44,7 @@ def all_trainers():
     trainers = db.session.scalars(stmt).all()
 
     # Serialise trainers with specified fields and return as JSON
-    return TrainerSchema(many=True, only=["id", "name", "username", "email"]).dump(
+    return TrainerSchema(many=True, only=["id", "name", "username", "email", "team"]).dump(
         trainers
     )
 
@@ -64,7 +64,7 @@ def one_trainer(id):
 def create_trainer():
     # # Load the requested "only" Trainer data from the request body using TrainerSchema
     trainer_info = TrainerSchema(
-        only=["name", "username", "email", "password"], unknown="exclude"
+        only=["name", "username", "email", "password", "team"], unknown="exclude"
     ).load(request.json)
 
     # Check for existing username or email
@@ -82,6 +82,14 @@ def create_trainer():
         # Raise an error if the trainer already exists
         abort(400, description="This trainer is already registered!")
 
+    trainer_team = trainer_info["team"].capitalize()
+    # checks if the team matches with the existing teams in the models
+    if trainer_team not in gym_types.enums:
+        # if it does not match it sends out an error
+        abort(
+            400, description=f"This is a Invalid Gym team: {trainer_info['team']}"
+        )
+
     # Create a new Trainer object with hashed password
     trainer = Trainer(
         name=trainer_info["name"],
@@ -90,6 +98,8 @@ def create_trainer():
         password=bcrypt.generate_password_hash(trainer_info["password"]).decode(
             "utf-8"
         ),
+        team=trainer_info['team'].capitalize(),
+        
     )
     # Add the new trainer to the database session
     db.session.add(trainer)
@@ -108,7 +118,7 @@ def update_trainer(id):
     authorize_owner_trainer(trainer)
     # Only allow updates to specified fields (name, username, email, password)
     trainer_info = TrainerSchema(
-        only=["name", "username", "email", "password"], unknown="exclude"
+        only=["name", "username", "email", "password",], unknown="exclude"
     ).load(request.json)
 
     # Check for existing username (if changed)
