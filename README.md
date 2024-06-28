@@ -135,9 +135,9 @@ class Pokemon(db.Model):
 
 `__tablename__` specifies the table name in the database. `Columns id`, `name`, `type`, `ability`, `date_caught`, and `trainer_id` are mapped to corresponding columns in the `Pokemons` table. Relationships (foreign keys) are managed using ForeignKey and relationship.
 
-### Data Validation and Serialization
+### Data Validation and Serialisation
 
-ORM systems often integrate with libraries such as Marshmallow to handle data validation and serialization, ensuring that data conforms to specified formats before being inserted into the database and when being retrieved.
+ORM systems often integrate with libraries such as Marshmallow to handle data validation and serialisation, ensuring that data conforms to specified formats before being inserted into the database and when being retrieved.
 
 ```python
 class PokemonSchema(ma.Schema):
@@ -213,45 +213,160 @@ These examples demonstrate the ease of adding records to the database using the 
 
 ![1](./docs/pokemon-ERD.png)
 
-The Entity Relationship Diagram (ERD) offers a clear visual representation of the database structure, making it easier to understand the relationships between different entities. It helps organize the data in a structured manner, ensuring that all necessary entities and their attributes are accounted for.
+The Entity Relationship Diagram (ERD) provides a clear visual representation of the database structure, making it easier to understand the relationships between different entities. It helps organise the data in a structured manner, ensuring that all necessary entities and their attributes are accounted for.
 
 ### The database consists of two main tables
 
 ### Pokemon
 
-- **Attributes:** Pokemon_Id (PK), name, type, ability, date_caught, trainer_id (FK)
+#### Attributes:
+
+```sql
+pokemon_Id (PK)
+name
+type (Values: Normal, Fire, Water, Electric, Grass, Ice, Fighting, Poison, Ground, Flying, Psychic, Bug, Rock, Ghost, Dragon, Dark, Steel, Fairy)
+ability
+date_caught
+trainer_id (FK)
+```
+
 - **Description:** The Pokemon table contains information about each Pokemon.
-- **Primary Key:** Pokemon_id uniquely identifies each Pokemon
-- **Foriegn Key:** trainer_id references the trainer_id in the trainers table.
+- **Primary Key:** `pokemon_Id` uniquely identifies each Pokemon
+- **Foriegn Key:** `trainer_id` references the `id` in the trainers table.
 
 ### Trainers
 
-- **Attributes:** Trainer_ID (PK), name, username, email, password, gym, admin
+#### Attributes:
+
+```sql
+trainer_Id (PK)
+name
+username
+email
+password
+Gym (Values: Mystic, Valor, Instinct)
+admin
+```
+
 - **Description:** The Trainers table stores information about each trainer, including their credentials for authentication and their affiliation with a specific gym.
-- **Primary Key:** Trainer_ID uniquely identifies each trainer.
-- **Foreign Key:** gym_id references Gym_id in the Gyms table.
+- **Primary Key:** `trainer_Id` uniquely identifies each trainer.
 
 ### Benefits of the ERD in Database Design
 
-#### Clarity and Planning
+### Clarity and Planning
 
 **Visualisation:** The ERD provides a clear visual representation of the database structure, making it easier to understand the relationships between different entities.
+**Organistion:** It helps organise the data in a structured manner, ensuring that all necessary entities and their attributes are accounted for.
 
-**Organisation:** It helps organise the data in a structured manner, ensuring that all necessary entities and their attributes are accounted for.
+### Normalisation
 
-#### Normalisation
-
-**Avoiding Redundancy:** The ERD helps in normalising the database by eliminating redundant data. For example, moves are stored separately in the Moves table and linked to Pokemon through the Pokemon_Moves table.
+**Avoiding Redundancy:** The ERD helps in normalising the database by eliminating redundant data, ensuring that each piece of information is stored in the appropriate table.
 
 **Data Integrity:** Ensures that data is stored in only one place, reducing the chances of data anomalies and maintaining consistency.
 
-#### Defining Relationships
+### Defining Relationships
 
-**Foreign Keys:** The use of foreign keys (FK) enforces referential integrity, ensuring that relationships between tables are maintained correctly. For instance, Pokemon_Id in Pokemon_Moves must match a valid Pokemon_Id in the Pokemon table.
+**Foreign Keys:** The use of foreign keys (FK) enforces referential integrity, ensuring that relationships between tables are maintained correctly. For instance, trainer_id in the Pokemon table must match a valid trainer_Id in the Trainers table.
 
-**Relationships:** Clearly defines how entities relate to each other (one-to-many, many-to-many), aiding in the correct implementation of business rules. For example, the many-to-many relationship between Pokemon and Moves allows for flexibility in assigning moves to Pokemon.
+**Relationships:** Clearly defines how entities relate to each other one-to-many or many-to-many, aiding in the correct implementation of business rules. In this ERD, a one-to-many relationship is depicted between Trainers and Pokemon, as each trainer can have multiple Pokemon.
 
 ## R7 Database Implementation During Development
+
+The Entity Relationship Diagram (ERD) shows the structure and organisation of the database. When coding starts, these models and their relationships are used in the database management system (DBMS). The detailed explanation includes the implemented models, their relationships, and comparisons of normalisation.
+
+### Implemented Models
+
+### Pokemon
+
+#### Attributes:
+
+```sql
+pokemon_Id (PK)
+name
+type
+ability
+date_caught
+trainer_id (FK)
+```
+
+**Description:** The Pokemon table contains information about each Pokemon. The primary key `pokemon_Id` uniquely identifies each Pokemon, while `trainer_id` is a foreign key that links to the Trainers table.
+
+### Trainers
+
+#### Attributes:
+
+```sql
+trainer_Id (PK)
+name
+username
+email
+password
+Gym
+admin
+```
+
+**Description:** The Trainers table stores information about each trainer. The primary key `trainer_Id` uniquely identifies each trainer.
+
+### Relationships
+
+The ERD illustrates a one-to-many relationship between Trainers and Pokemon. This means that each trainer can have multiple Pokemon, but each Pokemon is associated with only one trainer.
+
+### Normalisation
+
+Normalisation is the process of organising data to reduce redundancy and improve data integrity. The entities represented in the ERD are in the third normal form (3NF), ensuring that all attributes are dependent on the primary key and nothing else.
+
+### Comparison of Normalisation Levels
+
+#### Second Normal Form (2NF)
+
+In 2NF, we ensure that all non-key attributes are fully dependent on the entire primary key. For example, if a Pokemon can have multiple types, we need to separate the types into another table to achieve 2NF.
+
+### Pokemon Table:
+
+| Pokemon_ID | Name      | Ability  | Date_Caught | Trainer_ID |
+|------------|-----------|----------|-------------|------------|
+| 1          | Haunter   | Levitate | 2024-02-25  | 101        |
+| 2          | Bulbasaur | Overgrow | 2023-12-24  | 102        |
+
+### Pokemon_Types Table:
+
+| Pokemon_ID | Type     |
+|------------|----------|
+| 1          | Ghost    |
+| 1          | Poison   |
+| 2          | Grass    |
+| 2          | Poison   |
+
+This ensures that each type is fully dependent on the entire primary key (Pokemon_ID + Type).
+
+#### Third Normal Form (3NF)
+
+In 3NF, we ensure that all attributes are not only fully functionally dependent on the primary key but also that there are no transitive dependencies. By moving Gym to a separate table, we ensure that `Gym_Name` is dependent on `Gym_ID` rather than `Trainer_ID`, eliminating any transitive dependency.
+
+| Pokemon_ID | Name      | Ability  | Date_Caught | Trainer_ID |
+|------------|-----------|----------|-------------|------------|
+| 1          | Pikachu   | Static   | 2023-05-01  | 101        |
+| 2          | Bulbasaur | Overgrow | 2023-05-02  | 102        |
+
+### Trainers Table:
+
+| Trainer_ID | Name   | Username | Email            | Password | Gym_ID | Admin |
+|------------|--------|----------|------------------|----------|--------|-------|
+| 101        | john   | john123  | john@example.com | pass324  | 1      | Yes   |
+| 102        | smith  | smith456 | smith@example.com| pass459  | 2      | No    |
+
+### Gyms Table:
+
+| Gym_ID | Gym_Name |
+|--------|----------|
+| 1      | Mystic   |
+| 2      | Valor    |
+| 3      | Instinct |
+
+Gym names are stored only once, reducing the risk of inconsistent data entries.
+Improved Data Integrity:
+
+Changes to gym names need to be made in only one place, ensuring consistency across the database.
 
 ## R8 API Endpoints Usage
 
