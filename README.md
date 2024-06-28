@@ -36,6 +36,50 @@ All tasks are allocated and tracked through a Trello board. This allows me to vi
 
 ## R3 Third-Party Services and Dependencies
 
+### 1. Flask
+
+Flask is a web framework used to build Python web applications. It provides a flexible and lightweight foundation for creating web APIs and dynamic web pages.
+
+### 2. Flask-SQLAlchemy
+
+Flask-SQLAlchemy is a Flask extension that simplifies interacting with a relational database using SQLAlchemy. It handles object-relational mapping (ORM), allowing you to define models that map to database tables and interact with them using Python objects.
+
+### 3. SQLAlchemy
+
+SQLAlchemy is an object-relational mapper (ORM) for Python that simplifies interacting with relational databases. It allows you to define Python classes that map to database tables and write SQL queries in Python code.
+
+### 4. marshmallow
+
+marshmallow is a Python library for data serialisation and deserialisation. It helps validate, serialise, and deserialise data between different formats like JSON, XML, and Python dictionaries.
+
+### 5. Flask-marshmallow
+
+Flask-marshmallow is a Flask extension that integrates Marshmallow with Flask. It simplifies using Marshmallow for data validation and serialisation in Flask applications.
+
+### 6. bcrypt
+
+bcrypt is a password hashing library for Python. It securely stores passwords by hashing them before saving them in the database. This makes it impossible to retrieve the original passwords even if the database is compromised.
+
+### 7. Flask-Bcrypt
+
+Flask-Bcrypt is a Flask extension for using bcrypt for password hashing in Flask applications. It simplifies integrating bcrypt with your Flask app.
+
+### 8. Flask-JWT-Extended
+
+Flask-JWT-Extended is a Flask extension for implementing JSON Web Tokens (JWT) based authentication in your Flask application. It provides a secure and convenient way to authenticate users and manage access to resources.
+
+### 9. PyJWT
+
+PyJWT is a Python library for working with JSON Web Tokens (JWT). It helps you encode and decode JWT tokens used in Flask-JWT-Extended.
+
+### 10. python-dotenv
+
+python-dotenv is a library for loading environment variables from a .env file. It allows you to store sensitive configuration details like API keys and database credentials outside of your code for better security practices.
+
+### 11. psycopg2-binary
+
+psycopg2-binary is a library for connecting to PostgreSQL databases from Python. It provides a Python interface for interacting with PostgreSQL databases, which is likely the database used in this application.
+
 ## R4 Database System: Benefits and Drawbacks
 
 ## R5 ORM: Features and Functionalities
