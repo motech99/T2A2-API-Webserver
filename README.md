@@ -29,9 +29,7 @@ This simplified Pokemon API has the potential to lead to faster development and 
 
 ### [Link to Trello Board](https://trello.com/b/Jn1quw1R/pokemon-api)
 
-
 All tasks are allocated and tracked through a Trello board. This allows me to visually organise tasks using cards and lists, providing a clear overview of the project's progress. The status of each task is updated as it moves through different stages of completion. Trello's features, such as due dates, labels, and comments, help me manage deadlines and prioritise work.
-
 
 ### This is what it currently looks like as of **20/06/2024**. More features may be added depending on the time
 
