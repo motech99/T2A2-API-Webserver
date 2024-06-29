@@ -34,6 +34,38 @@ All tasks are allocated and tracked through a Trello board. This allows me to vi
 ![1](./docs/r2-1.png)
 ![2](./docs/r2-2.png)
 
+### progression as of **25/06/2024**
+
+![1](./docs/progression-2024-06-25.png)
+
+### progression as of **26/06/2024**
+
+![1](./docs/progression-2024-06-26.png)
+
+### progression as of **29/06/2024**
+
+![1](./docs/progression-2024-06-29.png)
+
+### Daily Stand-up
+
+### 06/21/2024
+
+![1](./docs/standup-1.png)
+
+### 06/24/2024
+
+![2](./docs/standup-2.png)
+
+### 06/25/2024
+
+![3](./docs/standup-3.png)
+
+### 06/26/2024
+
+![4](./docs/standup-4.png)
+
+### 06/26/2024 - 06/29/2024 final few days was spent on just working on the document
+
 ## R3 Third-Party Services and Dependencies
 
 ### 1. Flask
@@ -370,7 +402,266 @@ Changes to gym names need to be made in only one place, ensuring consistency acr
 
 ## R8 API Endpoints Usage
 
-### HTTP Verb
-### Path or Route
-### Required Data
-### Response
+To effectively use the trainer's API endpoints, refer to the details below for each endpoint, which includes the HTTP verb, path, required body or header data, and the expected response.
+
+### 1. Trainer Login
+
+**HTTP Verb:** POST
+
+**Path:** /trainers/login
+
+**Required Body Data:**
+
+```json
+{
+  "email": "trainer@example.com",
+  "username": "trainerUsername",
+  "password": "password123"
+}
+```
+
+**Response:**
+
+- Success (200):
+
+![1](./docs/trainer-endpoint-1.png)
+
+**Failure (401):** {"description": "Invalid username, email or password"}
+
+### 2. Get All Trainers
+
+**HTTP Verb:** GET
+
+**Path:** /trainers
+
+**Required Headers:**
+
+- **Authorisation:** Bearer <admin_jwt_token>
+
+**Response:**
+
+- Success (200):
+
+![1](./docs/trainer-endpoint-2.png)
+
+**Failure (403):** Unauthorised if not an admin.
+
+### 3. Get One Trainer
+
+**HTTP Verb:** GET
+
+**Path:** /trainers/<int:id>
+
+**Response:**
+
+- Success (200):
+
+![1](./docs/trainer-endpoint-3.png)
+
+**Failure (404):** Not found if the trainer does not exist.
+
+### 4. Create a Trainer
+
+**HTTP Verb:** POST
+
+**Path:** /trainers/create
+
+**Required Body Data:**
+
+```json
+{
+  "name": "Trainer Name",
+  "username": "trainerUsername",
+  "email": "trainer@example.com",
+  "password": "password123",
+  "team": "Mystic" or "instinict" or "Valor" // (Must be one of these options)
+}
+```
+
+**Response:**
+
+- Suceess (201)
+
+![1](./docs/trainer-endpoint-4.png)
+
+if the username is taken, or the gym is not one of those types, it raises an error
+
+**Failure (400):** {"description": "This trainer is already registered!"} or {"description": "This is an Invalid Gym team: TeamName"}
+
+### 5. Update an Existing Trainer
+
+**HTTP Verb:** PUT or PATCH
+
+**Path:** /trainers/update/<int:id>
+
+**Required Headers:**
+
+**- Authorisation:** Bearer <jwt_token>
+
+**Required Body Data:**
+
+```json
+{
+  "name": "Updated Name",
+  "username": "updatedUsername",
+  "email": "updated@example.com",
+  "password": "newpassword123"
+}
+```
+
+**Response:**
+
+- Success (200)
+
+![1](./docs/trainer-endpoint-5.png)
+
+**Failure (400):** {"description": "Username already registered"} or {"description": "Email already registered"}
+
+
+### 6. Delete an Existing Trainer
+
+**HTTP Verb:** DELETE
+
+**Path:** /trainers/delete/<int:id>
+
+**Required Headers:**
+
+**Authorisation: Bearer** <jwt_token>
+
+**Response:**
+
+- Success (200)
+
+![1](./docs/trainer-endpoint-6.png)
+
+
+### 1. Get All Pokemons
+
+**HTTP Verb:** GET
+
+**Path:** /pokemons
+
+**Required Headers:**
+
+- Authorisation: Bearer <admin_jwt_token>
+
+**Response:**
+
+- Success (200)
+
+![1](./docs/pokemon-endpoint-1.png)
+
+- **Failure (403):** Unauthorised if not an admin.
+
+### 2. Get Owned Pokemons
+
+**HTTP Verb:** GET
+
+**Path:** /pokemons/owned
+
+**Required Headers:**
+
+**Authorisation:** Bearer <jwt_token>
+
+**Response:**
+
+- Success (200)
+
+![1](./docs/pokemon-endpoint-2.png)
+
+- **Failure (404):** {"error": "No Pokemon found for this trainer."}
+
+### 3. Get One Pokemon
+
+**HTTP Verb:** GET
+
+**Path:** /pokemons/<int:id>
+
+**Required Headers:**
+
+**Authorisation:** Bearer <jwt_token>
+
+**Response:**
+
+- Success (200)
+
+![1](./docs/pokemon-endpoint-3.png)
+
+- **Failure (404):** Not found if the Pokemon does not exist or the user is not authorised to access it.
+
+### 4. Create a Pokemon
+
+**HTTP Verb:** POST
+
+**Path:** /pokemons/create
+
+**Required Headers:**
+
+**Authorisation:** Bearer <jwt_token>
+
+**Required Body Data:**
+
+```json
+{
+  "name": "Pokemon Name",
+  "type": "Normal" or "Fire" or "Water" or "Electric" or "Grass" or "Ice" or "Fighting" or "Poison" or "Ground" or "Flying"
+    "Psychic" or "Bug" or "Rock" or "Ghost" or "Dragon" or "Dark" or "Steel" or "Fairy", // Must be one of these options
+  "ability": "Ability"
+}
+```
+
+**Response:**
+
+- Success (201):
+
+![1](./docs/pokemon-endpoint-4.png)
+
+**Failure (400):** {"description": "This is a Invalid Pokemon type: PokemonType"}
+
+
+### 5. Update an Existing Pokemon
+
+**HTTP Verb:** PUT or PATCH
+
+**Path:** /pokemons/update/<int:id>
+
+**Required Headers:**
+
+**Authorisation:** Bearer <jwt_token>
+
+**Required Body Data:**
+
+```json
+{
+  "name": "Updated Name",
+  "type": "UpdatedType",
+  "ability": "Updated Ability"
+}
+```
+
+**Response:**
+
+- Success (200):
+
+![1](./docs/pokemon-endpoint-5.png)
+
+**Failure (400):** {"description": "This is a Invalid Pokemon type: PokemonType"}
+
+
+### 6. Delete an Existing Pokemon
+
+**HTTP Verb:** DELETE
+
+**Path:** /pokemons/delete/<int:id>
+
+**Required Headers:**
+
+**Authorisation: Bearer <jwt_token>**
+
+**Response:**
+
+- Success (200)
+
+![1](./docs/pokemon-endpoint-6.png)
+
+- **Failure (404):** Not found if the Pokemon does not exist or the user is not authorised to delete it.
