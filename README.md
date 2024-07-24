@@ -1,4 +1,4 @@
-# T2A2: API Webserver
+# T2A2: API Webserver POKEMON API
 
 ## Table of Contents
 
